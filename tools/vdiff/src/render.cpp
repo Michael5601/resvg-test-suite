@@ -205,8 +205,6 @@ QImage Render::renderViaResvg(const RenderData &data)
         qDebug().noquote() << "resvg:" << out;
     }
 
-    // TODO: convertToFormat is a temporary hack for e-radialGradient-031.svg + cairo backend
-    // for some reasons, it creates an RGB image, not RGBA.
     return loadImage(outPath).convertToFormat(QImage::Format_ARGB32);
 }
 
@@ -229,15 +227,19 @@ QImage Render::renderViaSvgNet(const RenderData &data)
 QImage Render::renderViaBatik(const RenderData &data)
 {
     const auto outImg = Paths::workDir() + "/batik.png";
-
-    const QString out = Process::run(data.convPath, {
-        "-scriptSecurityOff",
-        data.imgPath,
-        "-d", outImg,
-        "-w", QString::number(data.viewSize),
-        "-h", QString::number(data.viewSize),
-    }, true);
-
+    
+    // Construct the Batik command
+    QStringList arguments;
+    arguments << "-Djava.awt.headless=true"
+              << "-jar"
+              << data.convPath
+              << "-w" << QString::number(data.viewSize)
+	      << "-h" << QString::number(data.viewSize)
+              << data.imgPath
+              << "-d" << outImg;
+    
+    const QString out = Process::run("java", arguments, true);
+    
     if (!out.contains("success")) {
         qDebug().noquote() << "batik:" << out;
     }
@@ -280,8 +282,6 @@ QImage Render::renderViaRsvg(const RenderData &data)
         qDebug().noquote() << "rsvg:" << out;
     }
 
-    // TODO: convertToFormat is a temporary hack for e-radialGradient-031.svg
-    // for some reasons, it creates an RGB image, not RGBA.
     return loadImage(outImg).convertToFormat(QImage::Format_ARGB32);
 }
 
@@ -459,10 +459,6 @@ DiffOutput Render::diffImage(const DiffData &data)
     const int w = qMin(data.img1.width(), data.img2.width());
     const int h = qMin(data.img1.height(), data.img2.height());
 
-    // We have to convert ARGB images to RGB one with a white background,
-    // because colorDistance() doesn't work with alpha.
-    //
-    // TODO: remove, because expensive.
     const auto img1 = toRGBFormat(data.img1, Qt::white);
     const auto img2 = toRGBFormat(data.img2, Qt::white);
 
