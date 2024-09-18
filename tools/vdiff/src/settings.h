@@ -25,21 +25,11 @@ public:
     BuildType buildType = BuildType::Debug;
     QString customTestsPath;
     int viewSize = 250;
-    bool useChrome = true;
-    bool useFirefox = true;
-    bool useSafari = true;
     bool useBatik = true;
-    bool useInkscape = true;
-    bool useLibrsvg = true;
-    bool useSvgNet = true;
-    bool useQtSvg = true;
     bool useJSVG = true;
     bool useSVGSalamander = true;
     QString resvgDir; // it's a dir, not a path
-    QString firefoxPath;
     QString batikPath;
-    QString inkscapePath;
-    QString librsvgPath;
     QString jsvgPath;
     QString svgsalamanderPath;
 };

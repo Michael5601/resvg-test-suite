@@ -105,17 +105,10 @@ Tests Tests::load(const TestSuite testSuite, const QString &path, const QString 
         item.path = QFileInfo(testPath).absoluteFilePath();
         item.baseName = resolveBaseName(QFileInfo(testPath));
 
-        item.state.insert(Backend::Chrome,      stateFormStr(items.at(1)));
-        item.state.insert(Backend::Firefox,     stateFormStr(items.at(2)));
-        item.state.insert(Backend::Safari,      stateFormStr(items.at(3)));
-        item.state.insert(Backend::Resvg,       stateFormStr(items.at(4)));
-        item.state.insert(Backend::Batik,       stateFormStr(items.at(5)));
-        item.state.insert(Backend::Inkscape,    stateFormStr(items.at(6)));
-        item.state.insert(Backend::Librsvg,     stateFormStr(items.at(7)));
-        item.state.insert(Backend::SvgNet,      stateFormStr(items.at(8)));
-        item.state.insert(Backend::QtSvg,       stateFormStr(items.at(9)));
-        item.state.insert(Backend::JSVG,        stateFormStr(items.at(10)));
-         item.state.insert(Backend::SVGSalamander,        stateFormStr(items.at(11)));
+        item.state.insert(Backend::Resvg,       stateFormStr(items.at(1)));
+        item.state.insert(Backend::Batik,       stateFormStr(items.at(2)));
+        item.state.insert(Backend::JSVG,        stateFormStr(items.at(3)));
+        item.state.insert(Backend::SVGSalamander,  stateFormStr(items.at(4)));
 
         if (testSuite == TestSuite::Own) {
             item.title = parseTitle(testPath);
@@ -156,18 +149,11 @@ Tests Tests::loadCustom(const QString &path)
 
 void Tests::save(const QString &path)
 {
-    QString text = "title,chrome,firefox,safari,resvg,batik,inkscape,librsvg,svgnet,qtsvg,jsvg,svgsalamander\n";
+    QString text = "title,resvg,batik,jsvg,svgsalamander\n";
     for (const TestItem &item : m_data) {
         text += item.baseName + ',';
-        text += QString::number((int)item.state.value(Backend::Chrome))     + ',';
-        text += QString::number((int)item.state.value(Backend::Firefox))    + ',';
-        text += QString::number((int)item.state.value(Backend::Safari))     + ',';
         text += QString::number((int)item.state.value(Backend::Resvg))      + ',';
         text += QString::number((int)item.state.value(Backend::Batik))      + ',';
-        text += QString::number((int)item.state.value(Backend::Inkscape))   + ',';
-        text += QString::number((int)item.state.value(Backend::Librsvg))    + ',';
-        text += QString::number((int)item.state.value(Backend::SvgNet))     + ',';
-        text += QString::number((int)item.state.value(Backend::QtSvg))      + ',';
         text += QString::number((int)item.state.value(Backend::JSVG))       + ',';
         text += QString::number((int)item.state.value(Backend::SVGSalamander)) + '\n';
     }
@@ -241,15 +227,8 @@ QString backendToString(const Backend &t)
 {
     switch (t) {
         case Backend::Reference :   return "Reference";
-        case Backend::Chrome :      return "Chrome";
-        case Backend::Firefox :     return "Firefox";
-        case Backend::Safari :      return "Safari";
         case Backend::Resvg :       return "resvg";
         case Backend::Batik :       return "Batik";
-        case Backend::Inkscape :    return "Inkscape";
-        case Backend::Librsvg :     return "librsvg";
-        case Backend::SvgNet :      return "SVG.NET";
-        case Backend::QtSvg :       return "QtSvg";
         case Backend::JSVG :        return "JSVG";
         case Backend::SVGSalamander : return "SVGSalamander";
     }

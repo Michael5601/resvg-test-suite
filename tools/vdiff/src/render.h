@@ -62,15 +62,8 @@ private:
 
     static QImage loadImage(const QString &path);
     static QImage renderReference(const RenderData &data);
-    static QImage renderViaChrome(const RenderData &data);
-    static QImage renderViaFirefox(const RenderData &data);
-    static QImage renderViaSafari(const RenderData &data);
     static QImage renderViaResvg(const RenderData &data);
-    static QImage renderViaSvgNet(const RenderData &data);
     static QImage renderViaBatik(const RenderData &data);
-    static QImage renderViaInkscape(const RenderData &data);
-    static QImage renderViaRsvg(const RenderData &data);
-    static QImage renderViaQtSvg(const RenderData &data);
     static QImage renderViaJSVG(const RenderData &data);
     static QImage renderViaSVGSalamander(const RenderData &data);
     static RenderResult renderImage(const RenderData &data);

@@ -21,10 +21,7 @@ private:
 
 private slots:
     void on_buttonBox_accepted();
-    void on_btnSelectInkscape_clicked();
-    void on_btnSelectRsvg_clicked();
     void on_btnSelectResvg_clicked();
-    void on_btnSelectFirefox_clicked();
     void on_btnSelectBatik_clicked();
     void on_btnSelectJSVG_clicked();
     void on_btnSelectSVGSalamander_clicked();

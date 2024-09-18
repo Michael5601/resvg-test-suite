@@ -8,20 +8,10 @@ namespace Key {
     static const QString CustomTestsPath    = "CustomTestsPath";
     static const QString ResvgBuild         = "ResvgBuild";
     static const QString ResvgDir           = "ResvgDir";
-    static const QString FirefoxPath        = "FirefoxPath";
     static const QString BatikPath          = "BatikPath";
-    static const QString InkscapePath       = "InkscapePath";
-    static const QString RsvgPath           = "RsvgPath";
     static const QString JSVGPath           = "JSVGPath";
     static const QString SVGSalamanderPath  = "SVGSalamanderPath";
-    static const QString UseChrome          = "UseChrome";
-    static const QString UseFirefox         = "UseFirefox";
-    static const QString UseSafari          = "UseSafari";
     static const QString UseBatik           = "UseBatik";
-    static const QString UseInkscape        = "UseInkscape";
-    static const QString UseSvgNet          = "UseSvgNet";
-    static const QString UseLibrsvg         = "UseLibrsvg";
-    static const QString UseQtSvg           = "UseQtSvg";
     static const QString UseJSVG            = "UseJSVG";
     static const QString UseSVGSalamander   = "UseSVGSalamander";
     static const QString ViewSize           = "ViewSize";
@@ -68,22 +58,12 @@ void Settings::load() noexcept
                         ? BuildType::Release
                         : BuildType::Debug;
 
-    this->useChrome = appSettings.value(Key::UseChrome, true).toBool();
-    this->useFirefox = appSettings.value(Key::UseFirefox).toBool();
-    this->useSafari = appSettings.value(Key::UseSafari).toBool();
     this->useBatik = appSettings.value(Key::UseBatik).toBool();
-    this->useInkscape = appSettings.value(Key::UseInkscape).toBool();
-    this->useLibrsvg = appSettings.value(Key::UseLibrsvg).toBool();
-    this->useSvgNet = appSettings.value(Key::UseSvgNet).toBool();
-    this->useQtSvg = appSettings.value(Key::UseQtSvg).toBool();
     this->useJSVG = appSettings.value(Key::UseJSVG).toBool();
     this->useSVGSalamander = appSettings.value(Key::UseSVGSalamander).toBool();
 
     this->resvgDir = appSettings.value(Key::ResvgDir).toString();
-    this->firefoxPath = appSettings.value(Key::FirefoxPath).toString();
     this->batikPath = appSettings.value(Key::BatikPath).toString();
-    this->inkscapePath = appSettings.value(Key::InkscapePath).toString();
-    this->librsvgPath = appSettings.value(Key::RsvgPath).toString();
     this->svgsalamanderPath = appSettings.value(Key::SVGSalamanderPath).toString();
 }
 
@@ -94,21 +74,11 @@ void Settings::save() const noexcept
     appSettings.setValue(Key::CustomTestsPath, this->customTestsPath);
     appSettings.setValue(Key::ResvgBuild, buildTypeToStr(this->buildType));
     appSettings.setValue(Key::ViewSize, this->viewSize);
-    appSettings.setValue(Key::UseChrome, this->useChrome);
-    appSettings.setValue(Key::UseFirefox, this->useFirefox);
-    appSettings.setValue(Key::UseSafari, this->useSafari);
     appSettings.setValue(Key::UseBatik, this->useBatik);
-    appSettings.setValue(Key::UseInkscape, this->useInkscape);
-    appSettings.setValue(Key::UseLibrsvg, this->useLibrsvg);
-    appSettings.setValue(Key::UseSvgNet, this->useSvgNet);
-    appSettings.setValue(Key::UseQtSvg, this->useQtSvg);
     appSettings.setValue(Key::UseJSVG, this->useJSVG);
     appSettings.setValue(Key::UseSVGSalamander, this->useSVGSalamander);
     appSettings.setValue(Key::ResvgDir, this->resvgDir);
-    appSettings.setValue(Key::FirefoxPath, this->firefoxPath);
     appSettings.setValue(Key::BatikPath, this->batikPath);
-    appSettings.setValue(Key::InkscapePath, this->inkscapePath);
-    appSettings.setValue(Key::RsvgPath, this->librsvgPath);
     appSettings.setValue(Key::JSVGPath, this->jsvgPath);
     appSettings.setValue(Key::SVGSalamanderPath, this->svgsalamanderPath);
 }

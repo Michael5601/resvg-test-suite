@@ -94,86 +94,6 @@ QImage Render::renderReference(const RenderData &data)
     return img.convertToFormat(QImage::Format_ARGB32);
 }
 
-QImage Render::renderViaChrome(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/chrome.png";
-
-    const QString out = Process::run("node", {
-        QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../chrome-svgrender/svgrender.js",
-        data.imgPath,
-        outImg,
-        QString::number(data.viewSize)
-    }, true);
-
-    if (!out.isEmpty()) {
-        qDebug().noquote() << "chrome:" << out;
-    }
-
-    return loadImage(outImg);
-}
-
-QImage Render::renderViaFirefox(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/firefox.png";
-
-    QString out = Process::run(data.convPath, {
-        QString("--window-size=%1,%2").arg(data.viewSize).arg(data.viewSize),
-        QString("--screenshot=%1").arg(QFileInfo(outImg).absoluteFilePath()),
-        // The SVG file path must be formed as file:/// URL.
-        QUrl::fromLocalFile(data.imgPath).toString(),
-    }, true);
-
-    if (!out.isEmpty()) {
-        auto lines = out.split("\n");
-        lines.removeAll("");
-        auto warnings = lines.filter("Gtk-Message");
-        warnings << lines.filter("plugin-container");
-        for (const auto &w : warnings) {
-            lines.removeOne(w);
-        }
-
-        if (!lines.isEmpty()) {
-            out = lines.join("\n");
-
-            if (out.simplified() != "*** You are running in headless mode.") {
-                qDebug().noquote() << "firefox:" << out;
-            }
-        }
-    }
-
-    auto image = loadImage(outImg);
-
-    // Crop image. Firefox always produces a rectangular image.
-    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
-        const auto y = (image.height() - data.imageSize.height()) / 2;
-        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
-    }
-
-    return image;
-}
-
-QImage Render::renderViaSafari(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/" + QFileInfo(data.imgPath).fileName() + ".png";
-
-    const QString out = Process::run("qlmanage", {
-        "-t",
-        "-s", QString::number(data.viewSize),
-        "-o", Paths::workDir(),
-        data.imgPath,
-    }, true);
-
-    auto image = loadImage(outImg);
-
-    // Crop image. `qlmanage` always produces a rectangular image.
-    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
-        const auto y = (image.height() - data.imageSize.height()) / 2;
-        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
-    }
-
-    return image;
-}
-
 QImage Render::renderViaResvg(const RenderData &data)
 {
     const QString outPath = Paths::workDir() + "/resvg.png";
@@ -206,22 +126,6 @@ QImage Render::renderViaResvg(const RenderData &data)
     }
 
     return loadImage(outPath).convertToFormat(QImage::Format_ARGB32);
-}
-
-QImage Render::renderViaSvgNet(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/" + QFileInfo(data.imgPath).completeBaseName() + ".png";
-
-    const QString out = Process::run(data.convPath, {
-        data.imgPath,
-        outImg
-    }, true);
-
-    if (!out.isEmpty()) {
-        qDebug().noquote() << "svgnet:" << out;
-    }
-
-    return loadImage(outImg);
 }
 
 QImage Render::renderViaBatik(const RenderData &data)
@@ -317,58 +221,6 @@ QImage Render::renderViaSVGSalamander(const RenderData &data)
     return image;
 }
 
-QImage Render::renderViaInkscape(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/inkscape.png";
-
-    /*const QString out = */Process::run(data.convPath, {
-        data.imgPath,
-        "-w", QString::number(data.viewSize),
-        "--export-filename=" + outImg
-    });
-    return loadImage(outImg);
-}
-
-QImage Render::renderViaRsvg(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/rsvg.png";
-
-    const QString out = Process::run(data.convPath, {
-        "-f", "png",
-        "-w", QString::number(data.viewSize),
-        data.imgPath,
-        "-o", outImg
-    });
-
-    if (!out.isEmpty()) {
-        qDebug().noquote() << "rsvg:" << out;
-    }
-
-    return loadImage(outImg).convertToFormat(QImage::Format_ARGB32);
-}
-
-QImage Render::renderViaQtSvg(const RenderData &data)
-{
-#ifdef Q_OS_WIN
-    const auto exePath = QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../qtsvgrender/release/qtsvgrender";
-#else
-    const auto exePath = QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../qtsvgrender/qtsvgrender";
-#endif
-    const auto outImg = Paths::workDir() + "/qtsvg.png";
-
-    const QString out = Process::run(exePath, {
-        data.imgPath,
-        outImg,
-        QString::number(data.viewSize)
-    }, true);
-
-    if (!out.isEmpty()) {
-        qDebug().noquote() << "qtsvg:" << out;
-    }
-
-    return loadImage(outImg);
-}
-
 void Render::renderImages()
 {
     const auto ts = m_settings->testSuite;
@@ -402,36 +254,8 @@ void Render::renderImages()
         }
     };
 
-    if (m_settings->useChrome) {
-        renderCached(Backend::Chrome, QString());
-    }
-
-    if (m_settings->useFirefox) {
-        renderCached(Backend::Firefox, m_settings->firefoxPath);
-    }
-
-    if (m_settings->useSafari) {
-        renderCached(Backend::Safari, QString());
-    }
-
     if (m_settings->useBatik) {
         renderCached(Backend::Batik, m_settings->batikPath);
-    }
-
-    if (m_settings->useInkscape) {
-        renderCached(Backend::Inkscape, m_settings->inkscapePath);
-    }
-
-    if (m_settings->useLibrsvg) {
-        list.append({ Backend::Librsvg, m_viewSize, imageSize, m_imgPath, m_settings->librsvgPath, ts });
-    }
-
-    if (m_settings->useSvgNet) {
-        renderCached(Backend::SvgNet, QString());
-    }
-
-    if (m_settings->useQtSvg) {
-        list.append({ Backend::QtSvg, m_viewSize, imageSize, m_imgPath, QString(), ts });
     }
 
     if (m_settings->useJSVG) {
@@ -463,15 +287,8 @@ RenderResult Render::renderImage(const RenderData &data)
         QImage img;
         switch (data.type) {
             case Backend::Reference   : img = renderReference(data); break;
-            case Backend::Chrome      : img = renderViaChrome(data); break;
-            case Backend::Firefox     : img = renderViaFirefox(data); break;
-            case Backend::Safari      : img = renderViaSafari(data); break;
             case Backend::Resvg       : img = renderViaResvg(data); break;
-            case Backend::SvgNet      : img = renderViaSvgNet(data); break;
             case Backend::Batik       : img = renderViaBatik(data); break;
-            case Backend::Inkscape    : img = renderViaInkscape(data); break;
-            case Backend::Librsvg     : img = renderViaRsvg(data); break;
-            case Backend::QtSvg       : img = renderViaQtSvg(data); break;
             case Backend::JSVG        : img = renderViaJSVG(data); break;
             case Backend::SVGSalamander  : img = renderViaSVGSalamander(data); break;
         }
@@ -569,13 +386,9 @@ void Render::onImageRendered(const int idx)
 
     if (m_settings->testSuite != TestSuite::Custom) {
         switch (res.type) {
-            case Backend::Chrome :
-            case Backend::Firefox :
-            case Backend::Safari :
             case Backend::Batik :
             case Backend::JSVG :
-             case Backend::SVGSalamander :
-            case Backend::Inkscape : m_imgCache.setImage(res.type, m_imgPath, res.img); break;
+             case Backend::SVGSalamander : m_imgCache.setImage(res.type, m_imgPath, res.img); break;
             default : break;
         }
     }
@@ -586,21 +399,21 @@ void Render::onImagesRendered()
     if (m_settings->testSuite == TestSuite::Custom) {
         // Use Chrome as a reference.
 
-        const QImage refImg = m_imgs.value(Backend::Chrome);
+       // const QImage refImg = m_imgs.value(Backend::Chrome);
 
-        QVector<DiffData> list;
-        const auto append = [&](const Backend type){
-            if (m_imgs.contains(type) && type != Backend::Chrome) {
-                list.append({ type, refImg, m_imgs.value(type) });
-            }
-        };
+       // QVector<DiffData> list;
+       // const auto append = [&](const Backend type){
+       //     if (m_imgs.contains(type) && type != Backend::Chrome) {
+       //         list.append({ type, refImg, m_imgs.value(type) });
+       //     }
+       // };
 
-        for (int t = (int)Backend::Firefox; t <= (int)Backend::QtSvg; ++t) {
-            append((Backend)t);
-        }
+        //for (int t = (int)Backend::Firefox; t <= (int)Backend::QtSvg; ++t) {
+        //    append((Backend)t);
+        //}
 
-        const auto future = QtConcurrent::mapped(list, &Render::diffImage);
-        m_watcher2.setFuture(future);
+       // const auto future = QtConcurrent::mapped(list, &Render::diffImage);
+       // m_watcher2.setFuture(future);
     } else {
         const QImage refImg = m_imgs.value(Backend::Reference);
 
@@ -611,7 +424,7 @@ void Render::onImagesRendered()
             }
         };
 
-        for (int t = (int)Backend::Chrome; t <= (int)Backend::SVGSalamander; ++t) {
+        for (int t = (int)Backend::Resvg; t <= (int)Backend::SVGSalamander; ++t) {
             append((Backend)t);
         }
 

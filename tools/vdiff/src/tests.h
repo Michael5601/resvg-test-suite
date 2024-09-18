@@ -16,15 +16,8 @@ QDebug operator<<(QDebug dbg, const TestSuite &t);
 enum class Backend
 {
     Reference,
-    Chrome,
-    Firefox,
-    Safari,
     Resvg,
     Batik,
-    Inkscape,
-    Librsvg,
-    SvgNet,
-    QtSvg,
     JSVG,
     SVGSalamander,
 };
@@ -32,7 +25,7 @@ enum class Backend
 QString backendToString(const Backend &t);
 QDebug operator<<(QDebug dbg, const Backend &t);
 
-constexpr int BackendsCount = 12;
+constexpr int BackendsCount = 5;
 
 Q_DECL_PURE_FUNCTION inline uint qHash(const Backend &key, uint seed = 0)
 { return qHash((uint)key, seed); }

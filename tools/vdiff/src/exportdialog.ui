@@ -40,51 +40,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="chBoxBChrome">
-         <property name="text">
-          <string>Chrome</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chBoxBFirefox">
-         <property name="text">
-          <string>Firefox</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chBoxBSafari">
-         <property name="text">
-          <string>Safari</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="chBoxBBatik">
          <property name="text">
           <string>Batik</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chBoxBInkscape">
-         <property name="text">
-          <string>Inkscape</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chBoxBLibrsvg">
-         <property name="text">
-          <string>librsvg</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chBoxBQtSvg">
-         <property name="text">
-          <string>QtSvg</string>
          </property>
         </widget>
        </item>

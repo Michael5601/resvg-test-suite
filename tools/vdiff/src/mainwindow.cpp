@@ -84,36 +84,8 @@ void MainWindow::prepareBackends()
 
     backends << Backend::Resvg;
 
-    if (m_settings.useChrome) {
-        backends << Backend::Chrome;
-    }
-
-    if (m_settings.useFirefox) {
-        backends << Backend::Firefox;
-    }
-
-    if (m_settings.useSafari) {
-        backends << Backend::Safari;
-    }
-
     if (m_settings.useBatik) {
         backends << Backend::Batik;
-    }
-
-    if (m_settings.useInkscape) {
-        backends << Backend::Inkscape;
-    }
-
-    if (m_settings.useLibrsvg) {
-        backends << Backend::Librsvg;
-    }
-
-    if (m_settings.useSvgNet) {
-        backends << Backend::SvgNet;
-    }
-
-    if (m_settings.useQtSvg) {
-        backends << Backend::QtSvg;
     }
 
     if (m_settings.useJSVG) {

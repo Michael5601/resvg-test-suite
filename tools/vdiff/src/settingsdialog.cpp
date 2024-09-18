@@ -39,25 +39,8 @@ void SettingsDialog::loadSettings()
     ui->lineEditTestsPath->setText(m_settings->customTestsPath);
     ui->lineEditResvg->setText(m_settings->resvgDir);
 
-    ui->chBoxUseChrome->setChecked(m_settings->useChrome);
-
-    ui->chBoxUseFirefox->setChecked(m_settings->useFirefox);
-    ui->lineEditFirefox->setText(m_settings->firefoxPath);
-
-    ui->chBoxUseSafari->setChecked(m_settings->useSafari);
-
     ui->chBoxUseBatik->setChecked(m_settings->useBatik);
     ui->lineEditBatik->setText(m_settings->batikPath);
-
-    ui->chBoxUseInkscape->setChecked(m_settings->useInkscape);
-    ui->lineEditInkscape->setText(m_settings->inkscapePath);
-
-    ui->chBoxUseLibrsvg->setChecked(m_settings->useLibrsvg);
-    ui->lineEditRsvg->setText(m_settings->librsvgPath);
-
-    ui->chBoxUseSvgNet->setChecked(m_settings->useSvgNet);
-
-    ui->chBoxUseQtSvg->setChecked(m_settings->useQtSvg);
 
     ui->chBoxUseJSVG->setChecked(m_settings->useJSVG);
     ui->lineEditJSVG->setText(m_settings->jsvgPath);
@@ -73,10 +56,10 @@ void SettingsDialog::prepareTestsPathWidgets()
     const auto isCustom = ui->rBtnSuiteCustom->isChecked();
     ui->lineEditTestsPath->setVisible(isCustom);
     ui->btnSelectTest->setVisible(isCustom);
-    ui->chBoxUseChrome->setEnabled(!isCustom);
+    //ui->chBoxUseChrome->setEnabled(!isCustom);
 
     if (isCustom) {
-        ui->chBoxUseChrome->setChecked(true);
+      //  ui->chBoxUseChrome->setChecked(true);
     }
 }
 
@@ -93,22 +76,11 @@ void SettingsDialog::on_buttonBox_accepted()
                     ? BuildType::Release
                     : BuildType::Debug;
 
-    m_settings->useChrome = ui->chBoxUseChrome->isChecked();
-    m_settings->useFirefox = ui->chBoxUseFirefox->isChecked();
-    m_settings->useSafari = ui->chBoxUseSafari->isChecked();
     m_settings->useBatik = ui->chBoxUseBatik->isChecked();
-    m_settings->useInkscape = ui->chBoxUseInkscape->isChecked();
-    m_settings->useLibrsvg = ui->chBoxUseLibrsvg->isChecked();
-    m_settings->useSvgNet = ui->chBoxUseSvgNet->isChecked();
-    m_settings->useQtSvg = ui->chBoxUseQtSvg->isChecked();
     m_settings->useJSVG = ui->chBoxUseJSVG->isChecked();
     m_settings->useSVGSalamander = ui->chBoxUseSVGSalamander->isChecked();
 
-    m_settings->resvgDir = ui->lineEditResvg->text();
-    m_settings->firefoxPath = ui->lineEditFirefox->text();
     m_settings->batikPath = ui->lineEditBatik->text();
-    m_settings->inkscapePath = ui->lineEditInkscape->text();
-    m_settings->librsvgPath = ui->lineEditRsvg->text();
     m_settings->jsvgPath = ui->lineEditJSVG->text();
     m_settings->svgsalamanderPath = ui->lineEditSVGSalamander->text();
 
@@ -132,35 +104,11 @@ void SettingsDialog::on_btnSelectResvg_clicked()
     }
 }
 
-void SettingsDialog::on_btnSelectFirefox_clicked()
-{
-    const auto path = QFileDialog::getOpenFileName(this, "Firefox exe path");
-    if (!path.isEmpty()) {
-        ui->lineEditFirefox->setText(path);
-    }
-}
-
 void SettingsDialog::on_btnSelectBatik_clicked()
 {
     const auto path = QFileDialog::getOpenFileName(this, "batik-rasterizer exe path");
     if (!path.isEmpty()) {
         ui->lineEditBatik->setText(path);
-    }
-}
-
-void SettingsDialog::on_btnSelectInkscape_clicked()
-{
-    const auto path = QFileDialog::getOpenFileName(this, "Inkscape exe path");
-    if (!path.isEmpty()) {
-        ui->lineEditInkscape->setText(path);
-    }
-}
-
-void SettingsDialog::on_btnSelectRsvg_clicked()
-{
-    const auto path = QFileDialog::getOpenFileName(this, "rsvg-convert exe path");
-    if (!path.isEmpty()) {
-        ui->lineEditRsvg->setText(path);
     }
 }
 
