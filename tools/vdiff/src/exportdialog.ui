@@ -88,11 +88,18 @@
          </property>
         </widget>
        </item>
-       <!-- New rasterizer JSVG -->
+       <!-- New rasterizers -->
        <item>
         <widget class="QCheckBox" name="chBoxBJSVG">
          <property name="text">
           <string>JSVG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chBoxBSVGSalamander">
+         <property name="text">
+          <string>SVGSalamander</string>
          </property>
         </widget>
        </item>

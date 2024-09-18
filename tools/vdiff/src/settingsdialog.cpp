@@ -62,6 +62,9 @@ void SettingsDialog::loadSettings()
     ui->chBoxUseJSVG->setChecked(m_settings->useJSVG);
     ui->lineEditJSVG->setText(m_settings->jsvgPath);
 
+    ui->chBoxUseSVGSalamander->setChecked(m_settings->useSVGSalamander);
+    ui->lineEditSVGSalamander->setText(m_settings->svgsalamanderPath);
+
     prepareTestsPathWidgets();
 }
 
@@ -99,13 +102,15 @@ void SettingsDialog::on_buttonBox_accepted()
     m_settings->useSvgNet = ui->chBoxUseSvgNet->isChecked();
     m_settings->useQtSvg = ui->chBoxUseQtSvg->isChecked();
     m_settings->useJSVG = ui->chBoxUseJSVG->isChecked();
+    m_settings->useSVGSalamander = ui->chBoxUseSVGSalamander->isChecked();
 
     m_settings->resvgDir = ui->lineEditResvg->text();
     m_settings->firefoxPath = ui->lineEditFirefox->text();
     m_settings->batikPath = ui->lineEditBatik->text();
     m_settings->inkscapePath = ui->lineEditInkscape->text();
     m_settings->librsvgPath = ui->lineEditRsvg->text();
-     m_settings->jsvgPath = ui->lineEditJSVG->text();
+    m_settings->jsvgPath = ui->lineEditJSVG->text();
+    m_settings->svgsalamanderPath = ui->lineEditSVGSalamander->text();
 
     m_settings->save();
 }
@@ -164,5 +169,13 @@ void SettingsDialog::on_btnSelectJSVG_clicked()
     const auto path = QFileDialog::getOpenFileName(this, "jsvg-rasterizer exe path");
     if (!path.isEmpty()) {
         ui->lineEditJSVG->setText(path);
+    }
+}
+
+void SettingsDialog::on_btnSelectSVGSalamander_clicked()
+{
+    const auto path = QFileDialog::getOpenFileName(this, "svgsalamander-rasterizer exe path");
+    if (!path.isEmpty()) {
+        ui->lineEditSVGSalamander->setText(path);
     }
 }

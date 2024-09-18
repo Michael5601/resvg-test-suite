@@ -72,6 +72,7 @@ private:
     static QImage renderViaRsvg(const RenderData &data);
     static QImage renderViaQtSvg(const RenderData &data);
     static QImage renderViaJSVG(const RenderData &data);
+    static QImage renderViaSVGSalamander(const RenderData &data);
     static RenderResult renderImage(const RenderData &data);
     static DiffOutput diffImage(const DiffData &data);
 

@@ -34,10 +34,12 @@ public:
     bool useSvgNet = true;
     bool useQtSvg = true;
     bool useJSVG = true;
+    bool useSVGSalamander = true;
     QString resvgDir; // it's a dir, not a path
     QString firefoxPath;
     QString batikPath;
     QString inkscapePath;
     QString librsvgPath;
     QString jsvgPath;
+    QString svgsalamanderPath;
 };

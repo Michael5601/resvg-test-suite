@@ -286,6 +286,37 @@ QImage Render::renderViaJSVG(const RenderData &data)
     return image;
 }
 
+QImage Render::renderViaSVGSalamander(const RenderData &data)
+{
+    const auto outImg = Paths::workDir() + "/svgsalamander.png";
+    
+    // Construct the SVGSalamander command
+    QStringList arguments;
+    arguments << "-Djava.awt.headless=true"
+              << "-jar"
+              << data.convPath
+              << "-w" << QString::number(data.viewSize)
+	      << "-h" << QString::number(data.viewSize)
+              << data.imgPath
+              << "-d" << outImg;
+    
+    const QString out = Process::run("java", arguments, true);
+    
+    if (!out.contains("success")) {
+        qDebug().noquote() << "svgsalamander:" << out;
+    }
+
+    auto image = loadImage(outImg);
+
+    // Crop image. SVGSalamander always produces a rectangular image.
+    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
+        const auto y = (image.height() - data.imageSize.height()) / 2;
+        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
+    }
+
+    return image;
+}
+
 QImage Render::renderViaInkscape(const RenderData &data)
 {
     const auto outImg = Paths::workDir() + "/inkscape.png";
@@ -407,6 +438,10 @@ void Render::renderImages()
         renderCached(Backend::JSVG, m_settings->jsvgPath);
     }
 
+    if (m_settings->useSVGSalamander) {
+        renderCached(Backend::SVGSalamander, m_settings->svgsalamanderPath);
+    }
+
     const auto future = QtConcurrent::mapped(list, &Render::renderImage);
     m_watcher1.setFuture(future);
 }
@@ -438,6 +473,7 @@ RenderResult Render::renderImage(const RenderData &data)
             case Backend::Librsvg     : img = renderViaRsvg(data); break;
             case Backend::QtSvg       : img = renderViaQtSvg(data); break;
             case Backend::JSVG        : img = renderViaJSVG(data); break;
+            case Backend::SVGSalamander  : img = renderViaSVGSalamander(data); break;
         }
 
         return { data.type, img };
@@ -538,6 +574,7 @@ void Render::onImageRendered(const int idx)
             case Backend::Safari :
             case Backend::Batik :
             case Backend::JSVG :
+             case Backend::SVGSalamander :
             case Backend::Inkscape : m_imgCache.setImage(res.type, m_imgPath, res.img); break;
             default : break;
         }
@@ -574,7 +611,7 @@ void Render::onImagesRendered()
             }
         };
 
-        for (int t = (int)Backend::Chrome; t <= (int)Backend::JSVG; ++t) {
+        for (int t = (int)Backend::Chrome; t <= (int)Backend::SVGSalamander; ++t) {
             append((Backend)t);
         }
 

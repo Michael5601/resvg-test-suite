@@ -26,12 +26,13 @@ enum class Backend
     SvgNet,
     QtSvg,
     JSVG,
+    SVGSalamander,
 };
 
 QString backendToString(const Backend &t);
 QDebug operator<<(QDebug dbg, const Backend &t);
 
-constexpr int BackendsCount = 11;
+constexpr int BackendsCount = 12;
 
 Q_DECL_PURE_FUNCTION inline uint qHash(const Backend &key, uint seed = 0)
 { return qHash((uint)key, seed); }

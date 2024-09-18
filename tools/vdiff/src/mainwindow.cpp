@@ -120,6 +120,10 @@ void MainWindow::prepareBackends()
         backends << Backend::JSVG;
     }
 
+    if (m_settings.useSVGSalamander) {
+        backends << Backend::SVGSalamander;
+    }
+
 
     for (const Backend backend : backends) {
         auto w = new BackendWidget(backend);
