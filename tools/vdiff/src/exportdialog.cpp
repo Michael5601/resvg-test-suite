@@ -18,6 +18,7 @@ ExportDialog::ExportDialog(const QList<Backend> &backends, QWidget *parent)
     ui->chBoxBInkscape->setEnabled(backends.contains(Backend::Inkscape));
     ui->chBoxBLibrsvg->setEnabled(backends.contains(Backend::Librsvg));
     ui->chBoxBQtSvg->setEnabled(backends.contains(Backend::QtSvg));
+    ui->chBoxBJSVG->setEnabled(backends.contains(Backend::JSVG));  // New rasterizer
 
     ui->chBoxBResvg->setChecked(backends.contains(Backend::Resvg));
     ui->chBoxBChrome->setChecked(backends.contains(Backend::Chrome));
@@ -27,6 +28,7 @@ ExportDialog::ExportDialog(const QList<Backend> &backends, QWidget *parent)
     ui->chBoxBInkscape->setChecked(backends.contains(Backend::Inkscape));
     ui->chBoxBLibrsvg->setChecked(backends.contains(Backend::Librsvg));
     ui->chBoxBQtSvg->setChecked(backends.contains(Backend::QtSvg));
+    ui->chBoxBJSVG->setChecked(backends.contains(Backend::JSVG));  // New rasterizer
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText("Export");
 
@@ -54,6 +56,7 @@ ExportDialog::Options ExportDialog::options() const
     if (ui->chBoxBInkscape->isChecked())    { opt.backends << Backend::Inkscape; }
     if (ui->chBoxBLibrsvg->isChecked())     { opt.backends << Backend::Librsvg; }
     if (ui->chBoxBQtSvg->isChecked())       { opt.backends << Backend::QtSvg; }
+    if (ui->chBoxBJSVG->isChecked())        { opt.backends << Backend::JSVG; }  // New rasterizer
 
     return opt;
 }

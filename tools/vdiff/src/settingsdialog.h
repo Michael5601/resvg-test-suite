@@ -26,6 +26,7 @@ private slots:
     void on_btnSelectResvg_clicked();
     void on_btnSelectFirefox_clicked();
     void on_btnSelectBatik_clicked();
+    void on_btnSelectJSVG_clicked();
     void on_btnSelectTest_clicked();
     void prepareTestsPathWidgets();
 

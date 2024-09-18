@@ -99,7 +99,7 @@ QImage Render::renderViaChrome(const RenderData &data)
     const auto outImg = Paths::workDir() + "/chrome.png";
 
     const QString out = Process::run("node", {
-        QString(SRCDIR) + "../chrome-svgrender/svgrender.js",
+        QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../chrome-svgrender/svgrender.js",
         data.imgPath,
         outImg,
         QString::number(data.viewSize)
@@ -185,7 +185,7 @@ QImage Render::renderViaResvg(const RenderData &data)
             outPath,
             "-w", QString::number(data.viewSize),
             "--skip-system-fonts",
-            "--use-fonts-dir", QString(SRCDIR) + "../../fonts",
+            "--use-fonts-dir", QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../../fonts",
             "--font-family", "Noto Sans",
             "--serif-family", "Noto Serif",
             "--sans-serif-family", "Noto Sans",
@@ -255,6 +255,37 @@ QImage Render::renderViaBatik(const RenderData &data)
     return image;
 }
 
+QImage Render::renderViaJSVG(const RenderData &data)
+{
+    const auto outImg = Paths::workDir() + "/jsvg.png";
+    
+    // Construct the JSVG command
+    QStringList arguments;
+    arguments << "-Djava.awt.headless=true"
+              << "-jar"
+              << data.convPath
+              << "-w" << QString::number(data.viewSize)
+	      << "-h" << QString::number(data.viewSize)
+              << data.imgPath
+              << "-d" << outImg;
+    
+    const QString out = Process::run("java", arguments, true);
+    
+    if (!out.contains("success")) {
+        qDebug().noquote() << "jsvg:" << out;
+    }
+
+    auto image = loadImage(outImg);
+
+    // Crop image. JSVG always produces a rectangular image.
+    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
+        const auto y = (image.height() - data.imageSize.height()) / 2;
+        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
+    }
+
+    return image;
+}
+
 QImage Render::renderViaInkscape(const RenderData &data)
 {
     const auto outImg = Paths::workDir() + "/inkscape.png";
@@ -288,9 +319,9 @@ QImage Render::renderViaRsvg(const RenderData &data)
 QImage Render::renderViaQtSvg(const RenderData &data)
 {
 #ifdef Q_OS_WIN
-    const auto exePath = QString(SRCDIR) + "../qtsvgrender/release/qtsvgrender";
+    const auto exePath = QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../qtsvgrender/release/qtsvgrender";
 #else
-    const auto exePath = QString(SRCDIR) + "../qtsvgrender/qtsvgrender";
+    const auto exePath = QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../qtsvgrender/qtsvgrender";
 #endif
     const auto outImg = Paths::workDir() + "/qtsvg.png";
 
@@ -372,6 +403,10 @@ void Render::renderImages()
         list.append({ Backend::QtSvg, m_viewSize, imageSize, m_imgPath, QString(), ts });
     }
 
+    if (m_settings->useJSVG) {
+        renderCached(Backend::JSVG, m_settings->jsvgPath);
+    }
+
     const auto future = QtConcurrent::mapped(list, &Render::renderImage);
     m_watcher1.setFuture(future);
 }
@@ -402,6 +437,7 @@ RenderResult Render::renderImage(const RenderData &data)
             case Backend::Inkscape    : img = renderViaInkscape(data); break;
             case Backend::Librsvg     : img = renderViaRsvg(data); break;
             case Backend::QtSvg       : img = renderViaQtSvg(data); break;
+            case Backend::JSVG        : img = renderViaJSVG(data); break;
         }
 
         return { data.type, img };
@@ -501,6 +537,7 @@ void Render::onImageRendered(const int idx)
             case Backend::Firefox :
             case Backend::Safari :
             case Backend::Batik :
+            case Backend::JSVG :
             case Backend::Inkscape : m_imgCache.setImage(res.type, m_imgPath, res.img); break;
             default : break;
         }
@@ -537,7 +574,7 @@ void Render::onImagesRendered()
             }
         };
 
-        for (int t = (int)Backend::Chrome; t <= (int)Backend::QtSvg; ++t) {
+        for (int t = (int)Backend::Chrome; t <= (int)Backend::JSVG; ++t) {
             append((Backend)t);
         }
 

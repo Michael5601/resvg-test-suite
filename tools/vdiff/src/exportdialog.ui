@@ -88,6 +88,14 @@
          </property>
         </widget>
        </item>
+       <!-- New rasterizer JSVG -->
+       <item>
+        <widget class="QCheckBox" name="chBoxBJSVG">
+         <property name="text">
+          <string>JSVG</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">

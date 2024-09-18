@@ -116,6 +116,10 @@ void MainWindow::prepareBackends()
         backends << Backend::QtSvg;
     }
 
+    if (m_settings.useJSVG) {
+        backends << Backend::JSVG;
+    }
+
 
     for (const Backend backend : backends) {
         auto w = new BackendWidget(backend);
