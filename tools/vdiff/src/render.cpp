@@ -103,10 +103,10 @@ QImage Render::renderViaBatik(const RenderData &data)
     arguments << "-Djava.awt.headless=true"
               << "-jar"
               << data.convPath
-              << "-w" << QString::number(data.viewSize)
-	      << "-h" << QString::number(data.viewSize)
+              << QString::number(data.viewSize)
+	          << QString::number(data.viewSize)
               << data.imgPath
-              << "-d" << outImg;
+              << outImg;
     
     const QString out = Process::run("java", arguments, true);
     
