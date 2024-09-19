@@ -134,16 +134,12 @@ QImage Render::renderViaJSVG(const RenderData &data)
     arguments << "-Djava.awt.headless=true"
               << "-jar"
               << data.convPath
-              << "-w" << QString::number(data.viewSize)
-	      << "-h" << QString::number(data.viewSize)
+              << QString::number(data.viewSize)
+	          << QString::number(data.viewSize)
               << data.imgPath
-              << "-d" << outImg;
+              << outImg;
     
     const QString out = Process::run("java", arguments, true);
-    
-    if (!out.contains("success")) {
-        qDebug().noquote() << "jsvg:" << out;
-    }
 
     auto image = loadImage(outImg);
 
@@ -165,16 +161,12 @@ QImage Render::renderViaSVGSalamander(const RenderData &data)
     arguments << "-Djava.awt.headless=true"
               << "-jar"
               << data.convPath
-              << "-w" << QString::number(data.viewSize)
-	      << "-h" << QString::number(data.viewSize)
+              << QString::number(data.viewSize)
+	          << QString::number(data.viewSize)
               << data.imgPath
-              << "-d" << outImg;
+              << outImg;
     
     const QString out = Process::run("java", arguments, true);
-    
-    if (!out.contains("success")) {
-        qDebug().noquote() << "svgsalamander:" << out;
-    }
 
     auto image = loadImage(outImg);
 
@@ -196,11 +188,11 @@ QImage Render::renderViaEchoSVG(const RenderData &data)
     arguments << "-Djava.awt.headless=true"
               << "-jar"
               << data.convPath
-              << "-w" << QString::number(data.viewSize)
-	      << "-h" << QString::number(data.viewSize)
+              << QString::number(data.viewSize)
+	          << QString::number(data.viewSize)
               << data.imgPath
-              << "-d" << outImg;
-    
+              << outImg;
+
     const QString out = Process::run("java", arguments, true);
     
     if (!out.contains("success")) {

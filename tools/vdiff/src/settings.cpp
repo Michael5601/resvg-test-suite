@@ -50,6 +50,7 @@ void Settings::load() noexcept
     this->useEchoSVG = appSettings.value(Key::UseEchoSVG).toBool();
 
     this->batikPath = appSettings.value(Key::BatikPath).toString();
+    this->jsvgPath = appSettings.value(Key::JSVGPath).toString();
     this->svgsalamanderPath = appSettings.value(Key::SVGSalamanderPath).toString();
     this->echosvgPath = appSettings.value(Key::EchoSVGPath).toString();
 }

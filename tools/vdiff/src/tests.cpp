@@ -154,7 +154,7 @@ void Tests::save(const QString &path)
         text += item.baseName + ',';
         text += QString::number((int)item.state.value(Backend::Batik))      + ',';
         text += QString::number((int)item.state.value(Backend::JSVG))       + ',';
-        text += QString::number((int)item.state.value(Backend::SVGSalamander))       + ',';
+        text += QString::number((int)item.state.value(Backend::SVGSalamander))  + ',';
         text += QString::number((int)item.state.value(Backend::EchoSVG)) + '\n';
     }
 
@@ -229,6 +229,7 @@ QString backendToString(const Backend &t)
         case Backend::Reference :   return "Reference";
         case Backend::Batik :       return "Batik";
         case Backend::JSVG :        return "JSVG";
+        case Backend::EchoSVG : return "EchoSVG";
         case Backend::SVGSalamander : return "SVGSalamander";
     }
 
