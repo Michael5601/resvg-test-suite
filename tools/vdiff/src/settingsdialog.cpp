@@ -35,9 +35,7 @@ SettingsDialog::~SettingsDialog()
 void SettingsDialog::loadSettings()
 {
     ui->rBtnSuiteCustom->setChecked(m_settings->testSuite == TestSuite::Custom);
-    ui->rBtnRelease->setChecked(m_settings->buildType == BuildType::Release);
     ui->lineEditTestsPath->setText(m_settings->customTestsPath);
-    ui->lineEditResvg->setText(m_settings->resvgDir);
 
     ui->chBoxUseBatik->setChecked(m_settings->useBatik);
     ui->lineEditBatik->setText(m_settings->batikPath);
@@ -47,6 +45,9 @@ void SettingsDialog::loadSettings()
 
     ui->chBoxUseSVGSalamander->setChecked(m_settings->useSVGSalamander);
     ui->lineEditSVGSalamander->setText(m_settings->svgsalamanderPath);
+
+    ui->chBoxUseEchoSVG->setChecked(m_settings->useEchoSVG);
+    ui->lineEditEchoSVG->setText(m_settings->echosvgPath);
 
     prepareTestsPathWidgets();
 }
@@ -72,17 +73,15 @@ void SettingsDialog::on_buttonBox_accepted()
     m_settings->testSuite = suite;
     m_settings->customTestsPath = ui->lineEditTestsPath->text();
 
-    m_settings->buildType = ui->rBtnRelease->isChecked()
-                    ? BuildType::Release
-                    : BuildType::Debug;
-
     m_settings->useBatik = ui->chBoxUseBatik->isChecked();
     m_settings->useJSVG = ui->chBoxUseJSVG->isChecked();
     m_settings->useSVGSalamander = ui->chBoxUseSVGSalamander->isChecked();
+    m_settings->useEchoSVG = ui->chBoxUseEchoSVG->isChecked();
 
     m_settings->batikPath = ui->lineEditBatik->text();
     m_settings->jsvgPath = ui->lineEditJSVG->text();
     m_settings->svgsalamanderPath = ui->lineEditSVGSalamander->text();
+    m_settings->echosvgPath = ui->lineEditEchoSVG->text();
 
     m_settings->save();
 }
@@ -93,14 +92,6 @@ void SettingsDialog::on_btnSelectTest_clicked()
                                                         ui->lineEditTestsPath->text());
     if (!path.isEmpty()) {
         ui->lineEditTestsPath->setText(path);
-    }
-}
-
-void SettingsDialog::on_btnSelectResvg_clicked()
-{
-    const auto path = QFileDialog::getExistingDirectory(this, "resvg source path");
-    if (!path.isEmpty()) {
-        ui->lineEditResvg->setText(path);
     }
 }
 
@@ -125,5 +116,13 @@ void SettingsDialog::on_btnSelectSVGSalamander_clicked()
     const auto path = QFileDialog::getOpenFileName(this, "svgsalamander-rasterizer exe path");
     if (!path.isEmpty()) {
         ui->lineEditSVGSalamander->setText(path);
+    }
+}
+
+void SettingsDialog::on_btnSelectEchoSVG_clicked()
+{
+    const auto path = QFileDialog::getOpenFileName(this, "echosvg-rasterizer exe path");
+    if (!path.isEmpty()) {
+        ui->lineEditEchoSVG->setText(path);
     }
 }

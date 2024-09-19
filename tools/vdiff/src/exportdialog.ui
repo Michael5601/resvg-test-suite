@@ -33,13 +33,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="chBoxBResvg">
-         <property name="text">
-          <string>Resvg</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="chBoxBBatik">
          <property name="text">
           <string>Batik</string>
@@ -58,6 +51,13 @@
         <widget class="QCheckBox" name="chBoxBSVGSalamander">
          <property name="text">
           <string>SVGSalamander</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chBoxBEchoSVG">
+         <property name="text">
+          <string>EchoSVG</string>
          </property>
         </widget>
        </item>

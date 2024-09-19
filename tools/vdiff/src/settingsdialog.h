@@ -21,10 +21,10 @@ private:
 
 private slots:
     void on_buttonBox_accepted();
-    void on_btnSelectResvg_clicked();
     void on_btnSelectBatik_clicked();
     void on_btnSelectJSVG_clicked();
     void on_btnSelectSVGSalamander_clicked();
+    void on_btnSelectEchoSVG_clicked();
     void on_btnSelectTest_clicked();
     void prepareTestsPathWidgets();
 

@@ -94,40 +94,6 @@ QImage Render::renderReference(const RenderData &data)
     return img.convertToFormat(QImage::Format_ARGB32);
 }
 
-QImage Render::renderViaResvg(const RenderData &data)
-{
-    const QString outPath = Paths::workDir() + "/resvg.png";
-
-    QString out;
-    if (data.testSuite == TestSuite::Own) {
-        out = Process::run(data.convPath, {
-            data.imgPath,
-            outPath,
-            "-w", QString::number(data.viewSize),
-            "--skip-system-fonts",
-            "--use-fonts-dir", QString("D:/dev/oomph/Bachelor/Library-Comparison/resvg-test-suite/tools/vdiff") + "../../fonts",
-            "--font-family", "Noto Sans",
-            "--serif-family", "Noto Serif",
-            "--sans-serif-family", "Noto Sans",
-            "--cursive-family", "Yellowtail",
-            "--fantasy-family", "Sedgwick Ave Display",
-            "--monospace-family", "Noto Mono",
-        }, true);
-    } else {
-        out = Process::run(data.convPath, {
-            data.imgPath,
-            outPath,
-            "-w", QString::number(data.viewSize)
-        }, true);
-    }
-
-    if (!out.isEmpty()) {
-        qDebug().noquote() << "resvg:" << out;
-    }
-
-    return loadImage(outPath).convertToFormat(QImage::Format_ARGB32);
-}
-
 QImage Render::renderViaBatik(const RenderData &data)
 {
     const auto outImg = Paths::workDir() + "/batik.png";
@@ -221,6 +187,37 @@ QImage Render::renderViaSVGSalamander(const RenderData &data)
     return image;
 }
 
+QImage Render::renderViaEchoSVG(const RenderData &data)
+{
+    const auto outImg = Paths::workDir() + "/echosvg.png";
+    
+    // Construct the EchoSVG command
+    QStringList arguments;
+    arguments << "-Djava.awt.headless=true"
+              << "-jar"
+              << data.convPath
+              << "-w" << QString::number(data.viewSize)
+	      << "-h" << QString::number(data.viewSize)
+              << data.imgPath
+              << "-d" << outImg;
+    
+    const QString out = Process::run("java", arguments, true);
+    
+    if (!out.contains("success")) {
+        qDebug().noquote() << "echosvg:" << out;
+    }
+
+    auto image = loadImage(outImg);
+
+    // Crop image. EchoSVG always produces a rectangular image.
+    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
+        const auto y = (image.height() - data.imageSize.height()) / 2;
+        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
+    }
+
+    return image;
+}
+
 void Render::renderImages()
 {
     const auto ts = m_settings->testSuite;
@@ -237,8 +234,6 @@ void Render::renderImages()
     if (ts != TestSuite::Custom) {
         list.append({ Backend::Reference, m_viewSize, imageSize, m_imgPath, QString(), ts });
     }
-
-    list.append({ Backend::Resvg, m_viewSize, imageSize, m_imgPath, m_settings->resvgPath(), ts });
 
     auto renderCached = [&](const Backend backend, const QString &renderPath) {
         if (ts != TestSuite::Custom) {
@@ -266,6 +261,10 @@ void Render::renderImages()
         renderCached(Backend::SVGSalamander, m_settings->svgsalamanderPath);
     }
 
+    if (m_settings->useEchoSVG) {
+        renderCached(Backend::EchoSVG, m_settings->echosvgPath);
+    }
+
     const auto future = QtConcurrent::mapped(list, &Render::renderImage);
     m_watcher1.setFuture(future);
 }
@@ -287,10 +286,10 @@ RenderResult Render::renderImage(const RenderData &data)
         QImage img;
         switch (data.type) {
             case Backend::Reference   : img = renderReference(data); break;
-            case Backend::Resvg       : img = renderViaResvg(data); break;
             case Backend::Batik       : img = renderViaBatik(data); break;
             case Backend::JSVG        : img = renderViaJSVG(data); break;
             case Backend::SVGSalamander  : img = renderViaSVGSalamander(data); break;
+            case Backend::EchoSVG  : img = renderViaEchoSVG(data); break;
         }
 
         return { data.type, img };
@@ -388,7 +387,8 @@ void Render::onImageRendered(const int idx)
         switch (res.type) {
             case Backend::Batik :
             case Backend::JSVG :
-             case Backend::SVGSalamander : m_imgCache.setImage(res.type, m_imgPath, res.img); break;
+            case Backend::SVGSalamander :
+            case Backend::EchoSVG : m_imgCache.setImage(res.type, m_imgPath, res.img); break;
             default : break;
         }
     }
@@ -424,7 +424,7 @@ void Render::onImagesRendered()
             }
         };
 
-        for (int t = (int)Backend::Resvg; t <= (int)Backend::SVGSalamander; ++t) {
+        for (int t = (int)Backend::Batik; t <= (int)Backend::EchoSVG; ++t) {
             append((Backend)t);
         }
 

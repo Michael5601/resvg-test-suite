@@ -82,8 +82,6 @@ void MainWindow::prepareBackends()
         backends << Backend::Reference;
     }
 
-    backends << Backend::Resvg;
-
     if (m_settings.useBatik) {
         backends << Backend::Batik;
     }
@@ -94,6 +92,10 @@ void MainWindow::prepareBackends()
 
     if (m_settings.useSVGSalamander) {
         backends << Backend::SVGSalamander;
+    }
+
+    if (m_settings.useEchoSVG) {
+        backends << Backend::EchoSVG;
     }
 
 

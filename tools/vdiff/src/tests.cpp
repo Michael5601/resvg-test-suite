@@ -105,10 +105,10 @@ Tests Tests::load(const TestSuite testSuite, const QString &path, const QString 
         item.path = QFileInfo(testPath).absoluteFilePath();
         item.baseName = resolveBaseName(QFileInfo(testPath));
 
-        item.state.insert(Backend::Resvg,       stateFormStr(items.at(1)));
-        item.state.insert(Backend::Batik,       stateFormStr(items.at(2)));
-        item.state.insert(Backend::JSVG,        stateFormStr(items.at(3)));
-        item.state.insert(Backend::SVGSalamander,  stateFormStr(items.at(4)));
+        item.state.insert(Backend::Batik,       stateFormStr(items.at(1)));
+        item.state.insert(Backend::JSVG,        stateFormStr(items.at(2)));
+        item.state.insert(Backend::SVGSalamander,  stateFormStr(items.at(3)));
+        item.state.insert(Backend::EchoSVG,  stateFormStr(items.at(4)));
 
         if (testSuite == TestSuite::Own) {
             item.title = parseTitle(testPath);
@@ -149,13 +149,13 @@ Tests Tests::loadCustom(const QString &path)
 
 void Tests::save(const QString &path)
 {
-    QString text = "title,resvg,batik,jsvg,svgsalamander\n";
+    QString text = "title,batik,jsvg,svgsalamander,echosvg\n";
     for (const TestItem &item : m_data) {
         text += item.baseName + ',';
-        text += QString::number((int)item.state.value(Backend::Resvg))      + ',';
         text += QString::number((int)item.state.value(Backend::Batik))      + ',';
         text += QString::number((int)item.state.value(Backend::JSVG))       + ',';
-        text += QString::number((int)item.state.value(Backend::SVGSalamander)) + '\n';
+        text += QString::number((int)item.state.value(Backend::SVGSalamander))       + ',';
+        text += QString::number((int)item.state.value(Backend::EchoSVG)) + '\n';
     }
 
     QFile file(path);
@@ -227,7 +227,6 @@ QString backendToString(const Backend &t)
 {
     switch (t) {
         case Backend::Reference :   return "Reference";
-        case Backend::Resvg :       return "resvg";
         case Backend::Batik :       return "Batik";
         case Backend::JSVG :        return "JSVG";
         case Backend::SVGSalamander : return "SVGSalamander";

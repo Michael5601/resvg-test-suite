@@ -16,10 +16,10 @@ QDebug operator<<(QDebug dbg, const TestSuite &t);
 enum class Backend
 {
     Reference,
-    Resvg,
     Batik,
     JSVG,
     SVGSalamander,
+    EchoSVG,
 };
 
 QString backendToString(const Backend &t);

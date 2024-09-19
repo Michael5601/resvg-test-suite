@@ -6,14 +6,14 @@
 namespace Key {
     static const QString TestSuite          = "TestSuite";
     static const QString CustomTestsPath    = "CustomTestsPath";
-    static const QString ResvgBuild         = "ResvgBuild";
-    static const QString ResvgDir           = "ResvgDir";
     static const QString BatikPath          = "BatikPath";
     static const QString JSVGPath           = "JSVGPath";
     static const QString SVGSalamanderPath  = "SVGSalamanderPath";
+    static const QString EchoSVGPath        = "EchoSVGPath";
     static const QString UseBatik           = "UseBatik";
     static const QString UseJSVG            = "UseJSVG";
     static const QString UseSVGSalamander   = "UseSVGSalamander";
+    static const QString UseEchoSVG         = "UseEchoSVG";
     static const QString ViewSize           = "ViewSize";
 }
 
@@ -38,33 +38,20 @@ static TestSuite testSuiteFromStr(const QString &str) noexcept
     Q_UNREACHABLE();
 }
 
-static QString buildTypeToStr(BuildType t) noexcept
-{
-    switch (t) {
-        case BuildType::Debug   : return "debug";
-        case BuildType::Release : return "release";
-    }
-
-    Q_UNREACHABLE();
-}
-
 void Settings::load() noexcept
 {
     QSettings appSettings;
     this->testSuite = testSuiteFromStr(appSettings.value(Key::TestSuite).toString());
     this->customTestsPath = appSettings.value(Key::CustomTestsPath).toString();
 
-    this->buildType = appSettings.value(Key::ResvgBuild).toString() == "release"
-                        ? BuildType::Release
-                        : BuildType::Debug;
-
     this->useBatik = appSettings.value(Key::UseBatik).toBool();
     this->useJSVG = appSettings.value(Key::UseJSVG).toBool();
     this->useSVGSalamander = appSettings.value(Key::UseSVGSalamander).toBool();
+    this->useEchoSVG = appSettings.value(Key::UseEchoSVG).toBool();
 
-    this->resvgDir = appSettings.value(Key::ResvgDir).toString();
     this->batikPath = appSettings.value(Key::BatikPath).toString();
     this->svgsalamanderPath = appSettings.value(Key::SVGSalamanderPath).toString();
+    this->echosvgPath = appSettings.value(Key::EchoSVGPath).toString();
 }
 
 void Settings::save() const noexcept
@@ -72,20 +59,14 @@ void Settings::save() const noexcept
     QSettings appSettings;
     appSettings.setValue(Key::TestSuite, testSuiteToStr(this->testSuite));
     appSettings.setValue(Key::CustomTestsPath, this->customTestsPath);
-    appSettings.setValue(Key::ResvgBuild, buildTypeToStr(this->buildType));
     appSettings.setValue(Key::ViewSize, this->viewSize);
     appSettings.setValue(Key::UseBatik, this->useBatik);
     appSettings.setValue(Key::UseJSVG, this->useJSVG);
     appSettings.setValue(Key::UseSVGSalamander, this->useSVGSalamander);
-    appSettings.setValue(Key::ResvgDir, this->resvgDir);
+    appSettings.setValue(Key::UseEchoSVG, this->useEchoSVG);
     appSettings.setValue(Key::BatikPath, this->batikPath);
     appSettings.setValue(Key::JSVGPath, this->jsvgPath);
-    appSettings.setValue(Key::SVGSalamanderPath, this->svgsalamanderPath);
-}
-
-QString Settings::resvgPath() const noexcept
-{
-    return QString("%1/target/%2/resvg").arg(this->resvgDir, buildTypeToStr(this->buildType));
+    appSettings.setValue(Key::EchoSVGPath, this->echosvgPath);
 }
 
 QString Settings::resultsPath() const noexcept

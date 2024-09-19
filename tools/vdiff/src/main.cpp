@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication a(argc, argv);
-    a.setOrganizationName("resvg");
+    a.setOrganizationName("vector");
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     MainWindow w;

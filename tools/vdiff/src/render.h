@@ -62,10 +62,10 @@ private:
 
     static QImage loadImage(const QString &path);
     static QImage renderReference(const RenderData &data);
-    static QImage renderViaResvg(const RenderData &data);
     static QImage renderViaBatik(const RenderData &data);
     static QImage renderViaJSVG(const RenderData &data);
     static QImage renderViaSVGSalamander(const RenderData &data);
+    static QImage renderViaEchoSVG(const RenderData &data);
     static RenderResult renderImage(const RenderData &data);
     static DiffOutput diffImage(const DiffData &data);
 
