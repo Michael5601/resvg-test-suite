@@ -94,94 +94,15 @@ QImage Render::renderReference(const RenderData &data)
     return img.convertToFormat(QImage::Format_ARGB32);
 }
 
-QImage Render::renderViaBatik(const RenderData &data)
+QImage Render::renderViaLibrary(const RenderData &data)
 {
-    const auto outImg = Paths::workDir() + "/batik.png";
-    
-    // Construct the Batik command
-    QStringList arguments;
-    arguments << "-Djava.awt.headless=true"
-              << "-jar"
-              << data.convPath
-              << QString::number(data.viewSize)
-	          << QString::number(data.viewSize)
-              << data.imgPath
-              << outImg;
-    
-    const QString out = Process::run("java", arguments, true);
-    
-    if (!out.contains("success")) {
-        qDebug().noquote() << "batik:" << out;
-    }
-
-    auto image = loadImage(outImg);
-
-    // Crop image. Batik always produces a rectangular image.
-    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
-        const auto y = (image.height() - data.imageSize.height()) / 2;
-        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
-    }
-
-    return image;
-}
-
-QImage Render::renderViaJSVG(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/jsvg.png";
-    
-    // Construct the JSVG command
-    QStringList arguments;
-    arguments << "-Djava.awt.headless=true"
-              << "-jar"
-              << data.convPath
-              << QString::number(data.viewSize)
-	          << QString::number(data.viewSize)
-              << data.imgPath
-              << outImg;
-    
-    const QString out = Process::run("java", arguments, true);
-
-    auto image = loadImage(outImg);
-
-    // Crop image. JSVG always produces a rectangular image.
-    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
-        const auto y = (image.height() - data.imageSize.height()) / 2;
-        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
-    }
-
-    return image;
-}
-
-QImage Render::renderViaSVGSalamander(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/svgsalamander.png";
-    
-    // Construct the SVGSalamander command
-    QStringList arguments;
-    arguments << "-Djava.awt.headless=true"
-              << "-jar"
-              << data.convPath
-              << QString::number(data.viewSize)
-	          << QString::number(data.viewSize)
-              << data.imgPath
-              << outImg;
-    
-    const QString out = Process::run("java", arguments, true);
-
-    auto image = loadImage(outImg);
-
-    // Crop image. SVGSalamander always produces a rectangular image.
-    if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
-        const auto y = (image.height() - data.imageSize.height()) / 2;
-        image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
-    }
-
-    return image;
-}
-
-QImage Render::renderViaEchoSVG(const RenderData &data)
-{
-    const auto outImg = Paths::workDir() + "/echosvg.png";
+    auto outImg = Paths::workDir();
+    switch (data.type) {
+            case Backend::Batik   : outImg += "/batik.png"; break;
+            case Backend::EchoSVG       : outImg += "/echosvg.png"; break;
+            case Backend::JSVG        : outImg += "/jsvg.png"; break;
+            case Backend::SVGSalamander  : outImg += "/svgsalamander.png"; break;
+        }
     
     // Construct the EchoSVG command
     QStringList arguments;
@@ -194,10 +115,6 @@ QImage Render::renderViaEchoSVG(const RenderData &data)
               << outImg;
 
     const QString out = Process::run("java", arguments, true);
-    
-    if (!out.contains("success")) {
-        qDebug().noquote() << "echosvg:" << out;
-    }
 
     auto image = loadImage(outImg);
 
@@ -278,10 +195,7 @@ RenderResult Render::renderImage(const RenderData &data)
         QImage img;
         switch (data.type) {
             case Backend::Reference   : img = renderReference(data); break;
-            case Backend::Batik       : img = renderViaBatik(data); break;
-            case Backend::JSVG        : img = renderViaJSVG(data); break;
-            case Backend::SVGSalamander  : img = renderViaSVGSalamander(data); break;
-            case Backend::EchoSVG  : img = renderViaEchoSVG(data); break;
+            default: img = renderViaLibrary(data); break;
         }
 
         return { data.type, img };
