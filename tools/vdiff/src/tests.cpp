@@ -62,6 +62,18 @@ static QString resolveBaseName(const QFileInfo &info)
     return baseName;
 }
 
+static QString resolveBaseNameCustom(const QFileInfo &info)
+{
+    auto baseName = info.fileName();
+    
+    auto dir = info.absoluteDir();
+    baseName.prepend(dir.dirName() + "/");
+    dir.cdUp();
+    baseName.prepend(dir.dirName() + "/");
+
+    return baseName;
+}
+
 Tests Tests::load(const TestSuite testSuite, const QString &path, const QString &testsPath)
 {
     QFile file(path);
@@ -92,10 +104,6 @@ Tests Tests::load(const TestSuite testSuite, const QString &path, const QString 
         const auto items = line.split(',');
 
         if (items.size() != BackendsCount) {
-           throw QString("items size %1.").arg(items.length());
-        }
-
-        if (items.size() != BackendsCount) {
             throw QString("Invalid columns count at row %1.").arg(row);
         }
 
@@ -124,6 +132,52 @@ Tests Tests::load(const TestSuite testSuite, const QString &path, const QString 
 
 Tests Tests::loadCustom(const QString &path)
 {
+    // Tests tests;
+
+    // // Load the custom CSV file.
+    // QFile file(path);
+    // if (!file.open(QFile::ReadOnly)) {
+    //     throw QString("Failed to open %1.").arg(path);
+    // }
+
+    // const QString text = file.readAll();
+    // int row = 1;
+
+    // for (const auto &line : text.split('\n')) {
+    //     // Skip title.
+    //     if (row == 1) {
+    //         row++;
+    //         continue;
+    //     }
+
+    //     if (line.isEmpty()) {
+    //         break;
+    //     }
+
+    //     const auto items = line.split(',');
+
+    //     // Adjust column count check if BackendsCount applies here.
+    //     if (items.size() != BackendsCount) {
+    //        throw QString("Invalid columns count at row %1.").arg(row);
+    //     }
+
+    //     TestItem item;
+    //     const QString filePath = testsPath + '/' + items.at(0); // Assuming file path is the first column.
+    //     item.path = filePath;
+    //     item.baseName = QDir(path).relativeFilePath(filePath);
+
+    //     // Fill the state from the CSV.
+    //     item.state.insert(Backend::Batik,       stateFormStr(items.at(1)));
+    //     item.state.insert(Backend::JSVG,        stateFormStr(items.at(2)));
+    //     item.state.insert(Backend::SVGSalamander, stateFormStr(items.at(3)));
+    //     item.state.insert(Backend::EchoSVG,     stateFormStr(items.at(4)));
+
+    //     //tests.m_data << item;
+    //     row++;
+    // }
+
+    // return tests;
+
     Tests tests;
 
     static const QStringList filesFilter = { "*.svg", "*.svgz" };

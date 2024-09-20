@@ -11,7 +11,6 @@
 
 #include "paths.h"
 #include "process.h"
-#include "imagecache.h"
 
 #include "render.h"
 
@@ -140,22 +139,11 @@ void Render::renderImages()
     }
     imageSize = imageSize * (float(m_viewSize) / imageSize.width());
 
-    if (ts != TestSuite::Custom) {
-        list.append({ Backend::Reference, m_viewSize, imageSize, m_imgPath, QString(), ts });
-    }
+    list.append({ Backend::Reference, m_viewSize, imageSize, m_imgPath, QString(), ts });
+    
 
     auto renderCached = [&](const Backend backend, const QString &renderPath) {
-        if (ts != TestSuite::Custom) {
-            const auto cachedImage = m_imgCache.getImage(backend, m_imgPath);
-            if (!cachedImage.isNull()) {
-                m_imgs.insert(backend, cachedImage);
-                emit imageReady(backend, cachedImage);
-            } else {
-                list.append({ backend, m_viewSize, imageSize, m_imgPath, renderPath, ts });
-            }
-        } else {
-            list.append({ backend, m_viewSize, imageSize, m_imgPath, renderPath, ts });
-        }
+        list.append({ backend, m_viewSize, imageSize, m_imgPath, renderPath, ts });
     };
 
     if (m_settings->useBatik) {
@@ -288,39 +276,10 @@ void Render::onImageRendered(const int idx)
     const auto res = m_watcher1.resultAt(idx);
     m_imgs.insert(res.type, res.img);
     emit imageReady(res.type, res.img);
-
-    if (m_settings->testSuite != TestSuite::Custom) {
-        switch (res.type) {
-            case Backend::Batik :
-            case Backend::JSVG :
-            case Backend::SVGSalamander :
-            case Backend::EchoSVG : m_imgCache.setImage(res.type, m_imgPath, res.img); break;
-            default : break;
-        }
-    }
 }
 
 void Render::onImagesRendered()
 {
-    if (m_settings->testSuite == TestSuite::Custom) {
-        // Use Chrome as a reference.
-
-       // const QImage refImg = m_imgs.value(Backend::Chrome);
-
-       // QVector<DiffData> list;
-       // const auto append = [&](const Backend type){
-       //     if (m_imgs.contains(type) && type != Backend::Chrome) {
-       //         list.append({ type, refImg, m_imgs.value(type) });
-       //     }
-       // };
-
-        //for (int t = (int)Backend::Firefox; t <= (int)Backend::QtSvg; ++t) {
-        //    append((Backend)t);
-        //}
-
-       // const auto future = QtConcurrent::mapped(list, &Render::diffImage);
-       // m_watcher2.setFuture(future);
-    } else {
         const QImage refImg = m_imgs.value(Backend::Reference);
 
         QVector<DiffData> list;
@@ -336,7 +295,6 @@ void Render::onImagesRendered()
 
         const auto future = QtConcurrent::mapped(list, &Render::diffImage);
         m_watcher2.setFuture(future);
-    }
 }
 
 void Render::onDiffResult(const int idx)

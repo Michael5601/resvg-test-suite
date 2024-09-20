@@ -16,8 +16,7 @@ SOURCES  += \
     src/tests.cpp \
     src/paths.cpp \
     src/settings.cpp \
-    src/backendwidget.cpp \
-    src/imagecache.cpp
+    src/backendwidget.cpp
 
 HEADERS  += \
     src/exportdialog.h \
@@ -29,8 +28,7 @@ HEADERS  += \
     src/tests.h \
     src/paths.h \
     src/settings.h \
-    src/backendwidget.h \
-    src/imagecache.h
+    src/backendwidget.h
 
 FORMS    += \
     src/exportdialog.ui \

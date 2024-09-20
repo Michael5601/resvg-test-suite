@@ -68,13 +68,12 @@ void Settings::save() const noexcept
     appSettings.setValue(Key::BatikPath, this->batikPath);
     appSettings.setValue(Key::JSVGPath, this->jsvgPath);
     appSettings.setValue(Key::EchoSVGPath, this->echosvgPath);
+    appSettings.setValue(Key::SVGSalamanderPath, this->svgsalamanderPath);
 }
 
 QString Settings::resultsPath() const noexcept
 {
     Q_ASSERT(!QString(SRCDIR).isEmpty());
-    Q_ASSERT(this->testSuite != TestSuite::Custom);
-
     const auto path = QString("%1/../../%2.csv").arg(SRCDIR).arg(testSuiteToStr(this->testSuite));
 
     Q_ASSERT(QFile::exists(path));
@@ -87,7 +86,7 @@ QString Settings::testsPath() const noexcept
     QString path;
     switch (this->testSuite) {
         case TestSuite::Own      : path = QString("%1/../../tests").arg(SRCDIR); break;
-        case TestSuite::Custom   : Q_UNREACHABLE();
+        case TestSuite::Custom   : path = QString("%1/../../eclipse-tests").arg(SRCDIR); break;
     }
 
     Q_ASSERT(QFile::exists(path));

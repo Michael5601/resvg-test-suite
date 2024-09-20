@@ -78,9 +78,8 @@ void MainWindow::prepareBackends()
 
     QVector<Backend> backends;
 
-    if (m_settings.testSuite != TestSuite::Custom) {
-        backends << Backend::Reference;
-    }
+    backends << Backend::Reference;
+
 
     if (m_settings.useBatik) {
         backends << Backend::Batik;
@@ -109,18 +108,11 @@ void MainWindow::prepareBackends()
         ui->layBackends->addWidget(w);
     }
 
-    if (m_settings.testSuite != TestSuite::Custom) {
-        m_backendWidges.value(Backend::Reference)->setDiffVisible(false);
-        m_backendWidges.value(Backend::Reference)->setTestStateVisible(false);
-    }
+    m_backendWidges.value(Backend::Reference)->setDiffVisible(false);
+    m_backendWidges.value(Backend::Reference)->setTestStateVisible(false);
+    
 
-    if (m_settings.testSuite == TestSuite::Custom) {
-        for (auto *w : m_backendWidges.values()) {
-            w->setTestStateVisible(false);
-        }
-    }
-
-    ui->btnSync->setVisible(m_settings.testSuite == TestSuite::Own);
+    ui->btnSync->setVisible(true);
 
     QTimer::singleShot(50, this, [this](){
         ui->scrollAreaWidgetContents->adjustSize();
@@ -249,9 +241,7 @@ void MainWindow::fillChBoxes()
 
 void MainWindow::save()
 {
-    if (m_settings.testSuite != TestSuite::Custom) {
-        m_tests.save(m_settings.resultsPath());
-    }
+    m_tests.save(m_settings.resultsPath());
 }
 
 void MainWindow::updatePassFlags()
@@ -304,11 +294,6 @@ void MainWindow::onRenderFinished()
 
 void MainWindow::on_btnSync_clicked()
 {
-    if (m_settings.testSuite != TestSuite::Own) {
-        QMessageBox::warning(this, "Warning", "The official SVG test suite cannot be resynced.");
-        return;
-    }
-
     const auto ans = QMessageBox::question(this, "Resync?", "Reload test files?",
                                            QMessageBox::Yes | QMessageBox::No);
 

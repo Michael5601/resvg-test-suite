@@ -4,7 +4,6 @@
 #include <QFutureWatcher>
 #include <QImage>
 
-#include "imagecache.h"
 #include "settings.h"
 
 struct RenderData
@@ -74,7 +73,6 @@ private slots:
 
 private:
     Settings *m_settings = nullptr;
-    ImageCache m_imgCache;
     int m_viewSize = 300;
     qreal m_dpiScale = 1.0;
     QFutureWatcher<RenderResult> m_watcher1;
