@@ -6,3 +6,6 @@
 /barh
 .DS_Store
 eclipse-tests/
+w3c-tests/
+/group_results.json
+/results - Backup.csv
