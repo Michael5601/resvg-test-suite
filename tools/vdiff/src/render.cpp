@@ -66,7 +66,8 @@ Render::Render(QObject *parent)
 void Render::setScale(qreal s)
 {
     m_dpiScale = s;
-    m_viewSize = m_settings->viewSize * s;
+    m_viewSizeWidth = m_settings->viewSizeWidth * s;
+    m_viewSizeHeight = m_settings->viewSizeHeight * s;
 }
 
 void Render::render(const QString &path)
@@ -83,7 +84,7 @@ QImage Render::renderReference(const RenderData &data)
 
     Q_ASSERT(QFile(path).exists());
 
-    const QSize targetSize(data.viewSize, data.viewSize);
+    const QSize targetSize(data.viewSizeWidth, data.viewSizeHeight);
 
     QImage img(path);
     if (img.size() != targetSize) {
@@ -102,22 +103,34 @@ QImage Render::renderViaLibrary(const RenderData &data)
             case Backend::JSVG        : outImg += "/jsvg.png"; break;
             case Backend::SVGSalamander  : outImg += "/svgsalamander.png"; break;
         }
-    
-    // Construct the EchoSVG command
-    QStringList arguments;
-    arguments << "-Djava.awt.headless=true"
-              << "-jar"
-              << data.convPath
-              << QString::number(data.viewSize)
-	          << QString::number(data.viewSize)
-              << data.imgPath
-              << outImg;
 
-    const QString out = Process::run("java", arguments, true);
+    if (data.type == Backend::JSVG) {
+        QStringList arguments;
+        arguments << "-Djava.awt.headless=true"
+                << "-jar"
+                << data.convPath
+                << QString::number(data.viewSizeWidth)
+                << QString::number(data.viewSizeWidth)
+                << data.imgPath
+                << outImg;
+
+        const QString out = Process::run("java", arguments, true);
+    } else {
+         QStringList arguments;
+        arguments << "-Djava.awt.headless=true"
+                    << "-jar"
+                    << data.convPath
+                    << QString::number(data.viewSizeWidth)
+                    << QString::number(data.viewSizeHeight)
+                    << data.imgPath
+                    << outImg;
+
+        const QString out = Process::run("java", arguments, true);
+    }
 
     auto image = loadImage(outImg);
 
-    // Crop image. EchoSVG always produces a rectangular image.
+    // Crop image. Batik always produces a rectangular image.
     if (!data.imageSize.isEmpty() && data.imageSize != image.size()) {
         const auto y = (image.height() - data.imageSize.height()) / 2;
         image = image.copy(0, y, data.imageSize.width(), data.imageSize.height());
@@ -135,15 +148,15 @@ void Render::renderImages()
     // Parsing SVG using QtSvg directly is a bad idea, because it can crash.
     auto imageSize = guessSvgSize(m_imgPath);
     if (imageSize.isEmpty()) {
-        imageSize = QSize(m_viewSize, m_viewSize);
+        imageSize = QSize(m_viewSizeWidth, m_viewSizeHeight);
     }
-    imageSize = imageSize * (float(m_viewSize) / imageSize.width());
+    imageSize = imageSize * (float(m_viewSizeWidth) / imageSize.width());
 
-    list.append({ Backend::Reference, m_viewSize, imageSize, m_imgPath, QString(), ts });
+    list.append({ Backend::Reference, m_viewSizeWidth, m_viewSizeHeight, imageSize, m_imgPath, QString(), ts });
     
 
     auto renderCached = [&](const Backend backend, const QString &renderPath) {
-        list.append({ backend, m_viewSize, imageSize, m_imgPath, renderPath, ts });
+        list.append({ backend, m_viewSizeWidth, m_viewSizeHeight, imageSize, m_imgPath, renderPath, ts });
     };
 
     if (m_settings->useBatik) {
@@ -188,14 +201,14 @@ RenderResult Render::renderImage(const RenderData &data)
 
         return { data.type, img };
     } catch (const QString &s) {
-        QImage img(data.viewSize, data.viewSize, QImage::Format_ARGB32);
+        QImage img(data.viewSizeWidth, data.viewSizeHeight, QImage::Format_ARGB32);
         img.fill(Qt::white);
 
         QPainter p(&img);
         auto f = p.font();
         f.setPointSize(12);
         p.setFont(f);
-        p.drawText(QRect(0, 0, data.viewSize, data.viewSize),
+        p.drawText(QRect(0, 0, data.viewSizeWidth, data.viewSizeHeight),
                    Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap,
                    s);
         p.end();

@@ -16,7 +16,8 @@ public:
 public:
     TestSuite testSuite = TestSuite::Own;
     QString customTestsPath;
-    int viewSize = 250;
+    int viewSizeWidth = 240;
+    int viewSizeHeight = 180;
     bool useBatik = true;
     bool useJSVG = true;
     bool useSVGSalamander = true;

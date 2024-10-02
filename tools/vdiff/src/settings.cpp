@@ -14,7 +14,8 @@ namespace Key {
     static const QString UseJSVG            = "UseJSVG";
     static const QString UseSVGSalamander   = "UseSVGSalamander";
     static const QString UseEchoSVG         = "UseEchoSVG";
-    static const QString ViewSize           = "ViewSize";
+    static const QString ViewSizeWidth           = "ViewSizeWidth";
+    static const QString ViewSizeHeight           = "ViewSizeHeight";
 }
 
 static QString testSuiteToStr(TestSuite t) noexcept
@@ -60,7 +61,8 @@ void Settings::save() const noexcept
     QSettings appSettings;
     appSettings.setValue(Key::TestSuite, testSuiteToStr(this->testSuite));
     appSettings.setValue(Key::CustomTestsPath, this->customTestsPath);
-    appSettings.setValue(Key::ViewSize, this->viewSize);
+    appSettings.setValue(Key::ViewSizeWidth, this->viewSizeWidth);
+    appSettings.setValue(Key::ViewSizeHeight, this->viewSizeHeight);
     appSettings.setValue(Key::UseBatik, this->useBatik);
     appSettings.setValue(Key::UseJSVG, this->useJSVG);
     appSettings.setValue(Key::UseSVGSalamander, this->useSVGSalamander);

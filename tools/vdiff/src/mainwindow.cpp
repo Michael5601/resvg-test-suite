@@ -101,7 +101,7 @@ void MainWindow::prepareBackends()
     for (const Backend backend : backends) {
         auto w = new BackendWidget(backend);
         w->setTitle(backendToString(backend));
-        w->setViewSize(QSize(m_settings.viewSize, m_settings.viewSize));
+        w->setViewSize(QSize(m_settings.viewSizeWidth, m_settings.viewSizeHeight));
         connect(w, &BackendWidget::testStateChanged, this, &MainWindow::updatePassFlags);
         m_backendWidges.insert(backend, w);
 
@@ -117,7 +117,7 @@ void MainWindow::prepareBackends()
     QTimer::singleShot(50, this, [this](){
         ui->scrollAreaWidgetContents->adjustSize();
 
-        const auto w = (m_settings.viewSize + ui->layBackends->spacing())
+        const auto w = (m_settings.viewSizeWidth + ui->layBackends->spacing())
                        * qMin(6.5, (double)m_backendWidges.size());
         ui->scrollArea->setMinimumWidth(w);
         ui->scrollArea->setMinimumHeight(  ui->scrollAreaWidgetContents->height()
@@ -325,7 +325,7 @@ void MainWindow::on_btnSettings_clicked()
         m_render.setScale(qApp->screens().first()->devicePixelRatio());
 
         for (auto *w : m_backendWidges.values()) {
-            w->setViewSize(QSize(m_settings.viewSize, m_settings.viewSize));
+            w->setViewSize(QSize(m_settings.viewSizeWidth, m_settings.viewSizeHeight));
         }
 
         prepareBackends();
@@ -353,15 +353,15 @@ void MainWindow::on_btnPrint_clicked()
     const int titleHeight = 20;
     const int spacing = 5;
     const int testTitleHeight = fontMetrics().height() * 2;
-    const int fullWidth = m_settings.viewSize * backends + spacing * (backends + 1);
-    int fullHeight = titleHeight + m_settings.viewSize + spacing * 2;
+    const int fullWidth = m_settings.viewSizeWidth * backends + spacing * (backends + 1);
+    int fullHeight = titleHeight + m_settings.viewSizeHeight + spacing * 2;
 
     if (opt.showTitle) {
         fullHeight += testTitleHeight;
     }
 
     if (opt.showDiff) {
-        fullHeight += spacing + m_settings.viewSize;
+        fullHeight += spacing + m_settings.viewSizeHeight;
     }
 
     QImage image(fullWidth * scale, fullHeight * scale, QImage::Format_ARGB32);
@@ -390,7 +390,7 @@ void MainWindow::on_btnPrint_clicked()
         auto w = m_backendWidges.value(backend);
         const auto title = w->title();
 
-        const auto textRect = QRect(x, y, m_settings.viewSize, titleHeight - 3);
+        const auto textRect = QRect(x, y, m_settings.viewSizeWidth, titleHeight - 3);
         p.setPen(Qt::black);
         p.drawText(textRect, Qt::AlignCenter, title);
 
@@ -409,10 +409,10 @@ void MainWindow::on_btnPrint_clicked()
         }
 
         if (opt.showDiff) {
-            p.drawImage(x, y + titleHeight + m_settings.viewSize + spacing, w->diffImage());
+            p.drawImage(x, y + titleHeight + m_settings.viewSizeHeight + spacing, w->diffImage());
         }
 
-        x += m_settings.viewSize + spacing;
+        x += m_settings.viewSizeWidth + spacing;
     }
 
     p.end();

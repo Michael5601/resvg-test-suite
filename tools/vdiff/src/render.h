@@ -9,7 +9,8 @@
 struct RenderData
 {
     Backend type;
-    int viewSize;
+    int viewSizeWidth;
+    int viewSizeHeight;
     QSize imageSize;
     QString imgPath;
     QString convPath;
@@ -73,7 +74,8 @@ private slots:
 
 private:
     Settings *m_settings = nullptr;
-    int m_viewSize = 300;
+    int m_viewSizeWidth = 240;
+    int m_viewSizeHeight = 180;
     qreal m_dpiScale = 1.0;
     QFutureWatcher<RenderResult> m_watcher1;
     QFutureWatcher<DiffOutput> m_watcher2;
