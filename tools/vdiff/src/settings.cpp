@@ -74,8 +74,8 @@ void Settings::save() const noexcept
 QString Settings::resultsPath() const noexcept
 {
     Q_ASSERT(!QString(SRCDIR).isEmpty());
-    //const auto path = QString("%1/../../%2.csv").arg(SRCDIR).arg(testSuiteToStr(this->testSuite));
-    const auto path = QString("%1/../../%2.csv").arg(SRCDIR).arg("w3c");
+    const auto path = QString("%1/../../%2.csv").arg(SRCDIR).arg(testSuiteToStr(this->testSuite));
+
     Q_ASSERT(QFile::exists(path));
 
     return QFileInfo(path).absoluteFilePath();
@@ -86,8 +86,7 @@ QString Settings::testsPath() const noexcept
     QString path;
     switch (this->testSuite) {
         case TestSuite::Own      : path = QString("%1/../../tests").arg(SRCDIR); break;
-        //case TestSuite::Custom   : path = QString("%1/../../eclipse-tests").arg(SRCDIR); break;
-        case TestSuite::Custom   : path = QString("%1/../../w3c-tests").arg(SRCDIR); break;
+        case TestSuite::Custom   : path = QString("%1/../../eclipse-tests").arg(SRCDIR); break;
     }
 
     Q_ASSERT(QFile::exists(path));
