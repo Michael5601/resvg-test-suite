@@ -5,6 +5,7 @@ import json
 import subprocess
 import sys
 import os
+from collections import defaultdict
 from pathlib import Path
 
 UNKNOWN      = 0
@@ -16,6 +17,10 @@ class RowData:
     def __init__(self, name, flags):
         self.name = name
         self.flags = flags
+
+
+def get_group(name):
+    return name.split('/')[0]  # Extract group name before the first "/"
 
 
 is_svg2_only = "--svg2" in sys.argv
@@ -44,60 +49,44 @@ with open('results.csv', 'r') as f:
         if int(row[1]) == UNKNOWN:
             continue
 
-        flags = [int(row[1]), int(row[2]), int(row[3]), int(row[4]),
-                 int(row[5]), int(row[6]), int(row[7]), int(row[8]),
-                 int(row[9])]
-
+        flags = [int(row[1]), int(row[2]), int(row[3]), int(row[4])]
         rows.append(RowData(file_name, flags))
 
-passed = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+# Total passed for all tests
+passed_total = [0, 0, 0, 0]
+
+# Passed results grouped by group name
+group_passed = defaultdict(lambda: [0, 0, 0, 0])
+
 for row in rows:
+    group = get_group(row.name)
     for idx, flag in enumerate(row.flags):
         if flag == PASSED:
-            passed[idx] = passed[idx] + 1
+            passed_total[idx] += 1
+            group_passed[group][idx] += 1
 
-barh_data = json.dumps(
-{
+# Generate chart data for total results
+barh_data = {
     "items_font": {
         "family": "Arial",
         "size": 12
     },
     "items": [
         {
-            "name": "resvg 0.40.0",
-            "value": passed[3]
-        },
-        {
-            "name": "Chrome 123",
-            "value": passed[0]
-        },
-        {
-            "name": "Firefox 124",
-            "value": passed[1]
-        },
-        {
-            "name": "Safari 17.3.1",
-            "value": passed[2]
-        },
-        {
-            "name": "librsvg 2.58.0",
-            "value": passed[6]
-        },
-        {
-            "name": "Inkscape 1.3.2",
-            "value": passed[5]
-        },
-        {
             "name": "Batik 1.17",
-            "value": passed[4]
+            "value": passed_total[0]
         },
         {
-            "name": "SVG.NET 3.2.3",
-            "value": passed[7]
+            "name": "JSVG 1.6.1",
+            "value": passed_total[1]
         },
         {
-            "name": "QtSvg 6.7.0",
-            "value": passed[8]
+            "name": "svgSalamander 1.1.4",
+            "value": passed_total[2]
+        },
+        {
+            "name": "EchoSVG 1.2.2",
+            "value": passed_total[3]
         }
     ],
     "hor_axis": {
@@ -106,10 +95,23 @@ barh_data = json.dumps(
         "width": 700,
         "max_value": len(rows)
     }
-}, indent=4)
+}
 
 with open('chart.json', 'w') as f:
-    f.write(barh_data)
+    f.write(json.dumps(barh_data, indent=4))
+
+# Generate chart data for groups
+group_data = {}
+for group, passed in group_passed.items():
+    group_data[group] = {
+        "Batik 1.17": passed[0],
+        "JSVG 1.6.1": passed[1],
+        "svgSalamander 1.1.4": passed[2],
+        "EchoSVG 1.2.2": passed[3]
+    }
+
+with open('group_results.json', 'w') as f:
+    f.write(json.dumps(group_data, indent=4))
 
 if is_svg2_only:
     out_path = 'site/images/chart-svg2.svg'
