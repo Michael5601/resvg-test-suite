@@ -2,10 +2,13 @@
 .directory
 /official_test_suite
 /chart.json
+/chart_w3c.json
 /todo
 /barh
 .DS_Store
 eclipse-tests/
 w3c-tests/
 /group_results.json
+/group_results_w3c.json
 /results - Backup.csv
+/w3c - Backup.csv
