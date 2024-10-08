@@ -7,6 +7,7 @@
 /barh
 .DS_Store
 eclipse-tests/
+eclipse-tests-no-duplicates/
 w3c-tests/
 /group_results.json
 /group_results_w3c.json
