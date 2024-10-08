@@ -3,7 +3,11 @@
 /official_test_suite
 /chart.json
 /chart_w3c.json
+/chart_custom.json
+/chart_custom-no-duplicate.json
+/custom - no-duplicate.csv
 /todo
+diagrams/
 /barh
 .DS_Store
 eclipse-tests/
@@ -11,6 +15,8 @@ eclipse-tests-no-duplicates/
 w3c-tests/
 /group_results.json
 /group_results_w3c.json
+/group_results_custom.json
+/group_results_custom-no-duplicate.json
 /results - Backup.csv
 /w3c - Backup.csv
 /custom - Backup.csv
