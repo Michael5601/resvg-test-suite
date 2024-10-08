@@ -3,7 +3,11 @@
 /official_test_suite
 /chart.json
 /chart_w3c.json
+/chart_custom.json
+/chart_custom-no-duplicate.json
+/custom - no-duplicate.csv
 /todo
+diagrams/
 /barh
 .DS_Store
 eclipse-tests/
