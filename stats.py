@@ -25,15 +25,33 @@ def get_group(name):
 
 is_svg2_only = "--svg2" in sys.argv
 
+forbiddenSVG2Files = {"not-UTF-8-encoding.svg",
+                      "invalid-id-attribute-2.svg",
+                      "non-ASCII-character.svg",
+                      "compound-emojis-and-coordinates-list.svg",
+                      "compound-emojis.svg",
+                      "emojis.svg",
+                      "escaped-text-4.svg",
+                      "rotate-with-multiple-values-and-complex-text.svg",
+                      "zalgo.svg",
+                      "on-tspan-with-arabic.svg",
+                      "complex.svg",
+                      "writing-mode=tb.svg",
+                      "tb-and-punctuation.svg"}
 svg2_files = []
 if is_svg2_only:
     files = list(Path('tests').rglob('*.svg'))
-    files.remove(Path('tests/structure/svg/not-UTF-8-encoding.svg'))
     for file in files:
         with open(file, 'r') as f:
-            if "(SVG 2)" in f.read():
-                svg2_files.append(str(file).replace('tests/', ''))
+            if (file.name in forbiddenSVG2Files): 
+                continue
 
+            if "(SVG 2)" in f.read():
+                svg2_files.append(str(file).replace('tests\\', ''))
+
+for i in range(len(svg2_files)):
+    svg2_files[i] = svg2_files[i].replace("\\", "/")
+    
 rows = []
 with open('results.csv', 'r') as f:
     for row in csv.reader(f):
@@ -44,7 +62,7 @@ with open('results.csv', 'r') as f:
 
         if is_svg2_only and file_name not in svg2_files:
             continue
-
+        
         # Skip UB
         if int(row[1]) == UNKNOWN:
             continue
