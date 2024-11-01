@@ -13,6 +13,7 @@ diagrams/
 eclipse-tests/
 eclipse-tests-no-duplicates/
 w3c-tests/
+JSVG_Performance_Test/
 /group_results.json
 /group_results_w3c.json
 /group_results_custom.json

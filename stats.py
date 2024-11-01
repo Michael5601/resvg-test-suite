@@ -72,16 +72,24 @@ with open('results.csv', 'r') as f:
 
 # Total passed for all tests
 passed_total = [0, 0, 0, 0]
+crashed_total = [0, 0, 0, 0]
 
 # Passed results grouped by group name
 group_passed = defaultdict(lambda: [0, 0, 0, 0])
+group_crashed = defaultdict(lambda: [0, 0, 0, 0])
+group_count = defaultdict(int)
 
 for row in rows:
     group = get_group(row.name)
+    group_count[group] += 1
     for idx, flag in enumerate(row.flags):
         if flag == PASSED:
             passed_total[idx] += 1
             group_passed[group][idx] += 1
+        if flag == CRASHED:
+            crashed_total[idx] += 1
+            group_crashed[group][idx] += 1
+            
 
 # Generate chart data for total results
 barh_data = {
@@ -92,19 +100,23 @@ barh_data = {
     "items": [
         {
             "name": "Batik 1.17",
-            "value": passed_total[0]
+            "value": passed_total[0],
+            "crashed": crashed_total[0]
         },
         {
             "name": "JSVG 1.6.1",
-            "value": passed_total[1]
+            "value": passed_total[1],
+            "crashed": crashed_total[1]
         },
         {
             "name": "svgSalamander 1.1.4",
-            "value": passed_total[2]
+            "value": passed_total[2],
+            "crashed": crashed_total[2]
         },
         {
             "name": "EchoSVG 1.2.2",
-            "value": passed_total[3]
+            "value": passed_total[3],
+            "crashed": crashed_total[3]
         }
     ],
     "hor_axis": {
@@ -120,16 +132,31 @@ with open('chart.json', 'w') as f:
 
 # Generate chart data for groups
 group_data = {}
+
 for group, passed in group_passed.items():
     group_data[group] = {
+        "total_tests": group_count[group],
         "Batik 1.17": passed[0],
         "JSVG 1.6.1": passed[1],
         "svgSalamander 1.1.4": passed[2],
         "EchoSVG 1.2.2": passed[3]
     }
 
+group_data_crashed = {}
+for group, crashed in group_crashed.items():
+    group_data[group] = {
+        "total_tests": group_count[group],
+        "Batik 1.17": crashed[0],
+        "JSVG 1.6.1": crashed[1],
+        "svgSalamander 1.1.4": crashed[2],
+        "EchoSVG 1.2.2": crashed[3]
+    }
+
 with open('group_results.json', 'w') as f:
     f.write(json.dumps(group_data, indent=4))
+    
+with open('group_results_crashed.json', 'w') as f:
+    f.write(json.dumps(group_data_crashed, indent=4))
 
 if is_svg2_only:
     out_path = 'site/images/chart-svg2.svg'
